@@ -1,0 +1,27 @@
+# Keyword and description
+#
+# KEYWORD1 : Datatypes
+# KEYWORD2 : Methods and functions
+
+# Literals and description
+#
+# LITERAL1 : Constants
+
+ATSerial	KEYWORD1
+ATSerial_WiFi	KEYWORD1
+
+# From ATSerial.h
+isOkay	KEYWORD2
+restart	KEYWORD2
+available	KEYWORD2
+read	KEYWORD2
+readString	KEYWORD2
+
+# From ATSerial_WiFi.h
+joinAP	KEYWORD2
+setAP	KEYWORD2
+tcpServer	KEYWORD2
+
+# Literals
+RXDEFAULT	LITERAL1
+TXDEFAULT	LITERAL1
