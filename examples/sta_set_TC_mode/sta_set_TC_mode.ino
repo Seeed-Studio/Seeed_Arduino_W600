@@ -1,0 +1,144 @@
+#include "seeed_air602.h"
+
+// Architecture specific include
+#if defined(ARDUINO_ARCH_AVR)
+#pragma message("Defined architecture for ARDUINO_ARCH_AVR.")
+SoftwareSerial softSerial(2,3);
+#define SERIAL Serial
+
+#elif defined(ARDUINO_ARCH_SAM)
+#pragma message("Defined architecture for ARDUINO_ARCH_SAM.")
+#define SERIAL SerialUSB
+
+#elif defined(ARDUINO_ARCH_SAMD)
+#pragma message("Defined architecture for ARDUINO_ARCH_SAMD.")	
+#define SERIAL SerialUSB
+
+#elif defined(ARDUINO_ARCH_STM32F4)
+#pragma message("Defined architecture for ARDUINO_ARCH_STM32F4.")
+#define SERIAL SerialUSB
+#else
+#pragma message("Not found any architecture.")
+#endif
+
+#define debug  SERIAL
+
+
+String msg;
+AtWifi wifi;
+
+char *TARGET_IP   = "\"192.243.112.176\"";
+uint16_t TARGET_PORT = 8887;
+uint16_t LOCAL_PORT  = 1234;
+
+String SSID = "STU-EE";
+String PSWD = "stu-ee-2018";
+
+int32_t socket = 0;
+
+uint8_t bin_msg[] = {0x55,0x55,0x55,0x55};
+uint8_t recv_buf[50] = {0};
+uint32_t recv_len = 0;
+
+
+
+
+
+void print_recv_buf(uint8_t *buf,uint8_t buf_len)
+{
+    debug.print("Recv data = ");
+    for(int i=0;i<buf_len;i++)
+    {
+        debug.print(buf[i],HEX);
+        debug.print(".");
+    }
+    debug.println(" ");
+    debug.println(" ");
+}
+
+
+
+
+void setup()
+{
+    debug.begin(115200);
+    #if defined(SAMD21)
+        wifi.begin(Serial,9600);
+    #else
+        wifi.begin(softSerial,9600);
+    #endif
+
+    wifi.wifiReset();
+    delay(1000);
+
+    if(!wifi.wifiSetMode(STA))
+    {
+        debug.println("Set config mode failed!");
+        return ;
+    }
+    delay(100);
+    if(!wifi.wifiStaSetTargetApSsid(SSID)){
+        debug.println("Set target AP ssid failed!!");
+        return;
+    }
+    delay(100);
+    if(!wifi.wifiStaSetTargetApPswd(PSWD)){
+        debug.println("Set target AP password failed!!");
+        return;
+    }
+    delay(100);
+
+    if(!wifi.joinNetwork())
+    {
+        debug.println("Join to AP network failed!!");
+        return;
+    }
+    delay(1500);
+    if(!wifi.wifiCreateSocket(msg,TCP,Client,TARGET_IP,TARGET_PORT,LOCAL_PORT))
+    {
+        debug.println("Connect to remote server failed!!");
+        return;
+    }
+    delay(100);
+    socket = msg[0] - 0x30;
+    debug.print("socket = ");
+    debug.println(socket);
+
+    if(!wifi.wifiSetDefaultSocket(socket))
+    {
+        debug.println("Set default socket failed!!");
+        return;
+    }
+    delay(100);
+    if(!wifi.enterTcMode())
+    {
+        debug.println("Enter TC mode failed!!");
+        return;
+    }
+
+    debug.println("Wifi connect target server OK,send msg . . .");
+
+    /* Test a echo server.*/
+    //Send array {0x55,0x55,0x55,0x55} to echo server.
+    wifi.sendBinaryMsg(bin_msg,sizeof(bin_msg));
+    //If recv array {0x55,0x55,0x55,0x55} back,it indicate that communication normally.
+    wifi.recvData(recv_buf,recv_len);
+    print_recv_buf(recv_buf,recv_len);
+}
+
+
+void loop()
+{
+    if(wifi.exit_Tc_mode())
+    {
+        delay(500);
+        if(wifi.wifiCloseSpecSocket(socket))
+        {
+            debug.println("Close socket OK!!!!");
+            while(1);
+        }
+        // debug.println("Exit transparent transmission mode OK!!!!");
+        
+    }
+    
+}
