@@ -1,7 +1,11 @@
 /*
- * ATSerial.h
+ *  
+ * Copyright (c) 2019 Seeed Technology Co., Ltd.
+ * Website    : www.seeed.cc
+ * Author     : downey
+ * Create Time: Jan 2019
+ * Change Log :
  *
- * Copyright (c) 2018 seeed technology inc.
  * The MIT License (MIT)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -42,12 +46,12 @@
 #define SAMD21
 #define UART_MAX_LEN   1024
 #define debug SerialUSB
-#define DEBUG_EN 0
+#define DEBUG_EN 1
 #elif defined(ARDUINO_ARCH_SAMD)
 #define SAMD21
 #define UART_MAX_LEN   1024
 #define debug SerialUSB
-#define DEBUG_EN 0
+#define DEBUG_EN 1
 #elif defined(ARDUINO_ARCH_STM32F4)
 #define UART_MAX_LEN   1024
 #define debug Serial
@@ -82,7 +86,10 @@
 
 
 
-
+/**class ATSerial ,provide data transfer interface.
+ * 
+ * 
+ * */
 class ATSerial {
   protected:
   #if defined(SAMD21)
@@ -94,6 +101,9 @@ class ATSerial {
   public:
     ATSerial();
 
+    /** If arduino board is AVR,using softwareSerial,else if samd board,using hardwareSerial.
+     * 
+     * */
     #if defined(SAMD21)
       void begin(HardwareSerial &uart,uint32_t baud);
     #else 
