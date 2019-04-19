@@ -26,7 +26,10 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- */#include "seeed_air602.h"
+ */
+ 
+ 
+ #include "seeed_air602.h"
 
 // Architecture specific include
 #if defined(ARDUINO_ARCH_AVR)
@@ -46,7 +49,8 @@ SoftwareSerial softSerial(2,3);
 #pragma message("Defined architecture for ARDUINO_ARCH_STM32F4.")
 #define SERIAL SerialUSB
 #else
-#pragma message("Not found any architecture.")
+SoftwareSerial softSerial(2,3);
+#define SERIAL Serial
 #endif
 
 #define debug  SERIAL

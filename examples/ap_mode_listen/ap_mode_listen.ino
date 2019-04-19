@@ -28,6 +28,15 @@
  */
 #include "seeed_air602.h"
 
+
+/**Example desc:
+ *      Create a AP which named ${AP_SSID},IP is "192.168.88.1",if create succeed,
+ *      print sta information which connected .And then listening at port ${SERVER_PORT}.
+ * 
+ *      
+ * */
+
+
 // Architecture specific include
 #if defined(ARDUINO_ARCH_AVR)
 #pragma message("Defined architecture for ARDUINO_ARCH_AVR.")
@@ -45,8 +54,11 @@ SoftwareSerial softSerial(2,3);
 #elif defined(ARDUINO_ARCH_STM32F4)
 #pragma message("Defined architecture for ARDUINO_ARCH_STM32F4.")
 #define SERIAL SerialUSB
+
 #else
-#pragma message("Not found any architecture.")
+SoftwareSerial softSerial(2,3);
+#define SERIAL Serial
+
 #endif
 
 #define debug  SERIAL
@@ -113,6 +125,8 @@ void setup()
     }
     delay(500);
 
+    wifi.setWifiStatus(AP_MODE_SET_OK);
+
     if(!wifi.wifiCreateSocket(msg,TCP,Server,60000,0,SERVER_PORT))
     {
         debug.println("Listen failed!!");
@@ -136,34 +150,43 @@ void setup()
 String socket_read_msg;
 void loop()
 {
-    if(wifi.wifiApGetStationsInfo(msg))
+    if( wifi.getWifiStatus() > 0 )
     {
-        debug.print("Stations info : ");
-        debug.println(msg);
-    }
-
-    if(wifi.getSpecSocketInfo(msg,socket))
-    {
-        int i = 0;
-        debug.print("Sockets info : ");
-        debug.println(msg);
-        while((msg[0] > '0') && (msg[0] <= '9') )
+        if(wifi.wifiApGetStationsInfo(msg))
         {
-            client_socket[i] = msg[0] - 0x30;
-            if(wifi.wifiSocketRead(socket_read_msg,client_socket[i],(uint32_t)10))
+            debug.println("Stations info :[sta num],[sta1 mac],[sta1_ip],[sta2_mac],[sta2_ip]...");
+            debug.println(msg);
+        }
+
+        if(wifi.getSpecSocketInfo(msg,socket))
+        {
+            int i = 0;
+            debug.println("Sockets info : [socket],[status],[host],[host port],[local port],[rxdata]");
+            debug.println(msg);
+            while((msg[0] > '0') && (msg[0] <= '9') )
             {
-                if(socket_read_msg[0] != '0')
+                client_socket[i] = msg[0] - 0x30;
+                if(wifi.wifiSocketRead(socket_read_msg,client_socket[i],(uint32_t)10))
                 {
-                    debug.print("Read from remote server========================================= data = ");
-                    debug.println(socket_read_msg);
-                    debug.println(" ");
-                    debug.println(" ");
+                    if(socket_read_msg[0] != '0')
+                    {
+                        debug.println("************************************************************");
+                        debug.print("Read from remote station= data len , data content = ");
+                        debug.println(socket_read_msg);
+                        debug.println("************************************************************");
+                        debug.println("  ");
+                        wifi.wifiSocketSend(msg,client_socket[i],socket_read_msg);
+                    }
                 }
+                msg.remove(0,msg.indexOf('\n'));
+                i++;
             }
-            msg.remove(0,msg.indexOf('\n'));
-            i++;
         }
     }
-
-    delay(2000);
+    else
+    {
+        debug.println("AP mode init failed");
+    }
+    
+    delay(1000);
 }

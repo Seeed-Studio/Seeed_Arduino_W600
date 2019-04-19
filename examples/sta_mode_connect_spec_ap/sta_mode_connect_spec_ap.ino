@@ -46,7 +46,8 @@ SoftwareSerial softSerial(2,3);
 #pragma message("Defined architecture for ARDUINO_ARCH_STM32F4.")
 #define SERIAL SerialUSB
 #else
-#pragma message("Not found any architecture.")
+SoftwareSerial softSerial(2,3);
+#define SERIAL Serial
 #endif
 
 #define debug  SERIAL
@@ -56,7 +57,7 @@ String msg;
 AtWifi wifi;
 
 String SSID = "STU-EE";
-String PSWD = "stu-ee-2018";
+String PSWD = "stu-ee-2022";
 
 void setup()
 {

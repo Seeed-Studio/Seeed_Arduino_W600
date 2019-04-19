@@ -26,7 +26,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
+
 #include "seeed_air602.h"
+
+
+
+/**Example desc:
+ *      Create a AP which named ${AP_SSID},if create succeed,
+ *      print sta information which connected .
+ * */
 
 String msg;
 AtWifi wifi;
@@ -55,7 +64,8 @@ SoftwareSerial softSerial(2,3);
 #pragma message("Defined architecture for ARDUINO_ARCH_STM32F4.")
 #define SERIAL SerialUSB
 #else
-#pragma message("Not found any architecture.")
+SoftwareSerial softSerial(2,3);
+#define SERIAL Serial
 #endif
 
 #define debug  SERIAL
@@ -107,7 +117,17 @@ void setup()
         debug.println("Join to AP network failed!!");
         return;
     }
+    wifi.setWifiStatus(AP_MODE_SET_OK);
 
+    /*There is a huge difference between samd21-board(arduino zero、this board or other board based on samd21) 
+    and mega328-board(arduino uno or arduino avr board),is that : When you use a avr board,you can simplely 
+    reset the board by reopen serial monitor.
+    But for samd board,it can't! In addition，The samd board uses different serial ports for bootloader and 
+    application,This characteristic leads that :If user open the board's application serial monitor,
+    when user reset the module,it runs bootloader at first,causing in OS-system can't find the serial port which user opened,
+    So that the port will be closed.
+    and then jump to application,the serial port changes too,user shoult reopen the serial monitor manually. 
+    */
     debug.println("Wifi set ap mode ok!");
     debug.print("SSID = ");
     debug.println(AP_SSID);
@@ -118,11 +138,15 @@ void setup()
 
 void loop()
 {
-    //Scanning the stations which connect to this ap periodly and print their info.
-    if(wifi.wifiApGetStationsInfo(msg))
+    if(wifi.getWifiStatus() > 0 )
     {
-        debug.println("Stations info :[sta num],[sta1 mac],[sta1_ip],[sta2_mac],[sta2_ip]...");
-        debug.println(msg);
+        //Scanning the stations which connect to this ap periodly and print their info.
+        if(wifi.wifiApGetStationsInfo(msg))
+        {
+            debug.println("Stations info :[sta num],[sta1 mac],[sta1_ip],[sta2_mac],[sta2_ip]...");
+            debug.println(msg);
+        }
     }
+    
     delay(2000);
 }

@@ -46,7 +46,8 @@ SoftwareSerial softSerial(2,3);
 #pragma message("Defined architecture for ARDUINO_ARCH_STM32F4.")
 #define SERIAL SerialUSB
 #else
-#pragma message("Not found any architecture.")
+SoftwareSerial softSerial(2,3);
+#define SERIAL Serial
 #endif
 
 #define debug  SERIAL
