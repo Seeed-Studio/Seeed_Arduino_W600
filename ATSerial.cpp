@@ -70,13 +70,13 @@ bool ATSerial::readResp(String &rsp,uint32_t time_out)
 		 return false;
 	 }
   }
-  delayMicroseconds(1000);
+  delayMicroseconds(5000);
   while(_uart->available())
   {
     rsp += (char)_uart->read();
     if(rsp.length() >= UART_MAX_LEN)
       break;
-    delayMicroseconds(1000);
+    delayMicroseconds(5000);
   }
   flush();
   return true;
@@ -87,8 +87,9 @@ bool ATSerial::readResp(String &rsp,uint32_t time_out)
 
 /**
  * Checks for the substring in the response received from the device.
- *
  * @param s the substring to be checked
+ * @param match_len The substring's length to be check.
+ * @param time_out If the wifi module had not rsp within time_out(ms),return false
  * @return true if the provided substring is found in the response, else false
  */
 bool ATSerial::checkResponse(String& s,uint16_t match_len,uint32_t time_out) 
@@ -117,6 +118,13 @@ bool ATSerial::checkResponse(String& s,uint16_t match_len,uint32_t time_out)
 }
 
 
+/** Check the resp of the AT-CMD,and get the msg returned from wifi module.
+ *  @param s The substring to be checked.
+ *  @param match_len The substring's length to be check.
+ *  @param time_out If the wifi module had not rsp within time_out(ms),return false
+ *  @param msg The msg reveived from wifi module.
+ *  @return  true if the provided substring is found in the response, else false
+ * */
 bool ATSerial::checkResponseAndGetMessage(String& s,uint16_t match_len,uint32_t time_out,String& msg) 
 {
   bool ret = false;
@@ -139,6 +147,11 @@ bool ATSerial::checkResponseAndGetMessage(String& s,uint16_t match_len,uint32_t 
       return false;
     }
   }
+  //strcpy(msg.c_str(),(const char*)rsp.c_str());
+  // for(int i=0;i<rsp.length();i++)
+  // {
+  //   msg[i] = rsp[i];
+  // }
   msg = rsp;
   return true;
 }
@@ -208,6 +221,10 @@ bool ATSerial::sendCmdAndGetMsg(String &msg,String &cmd,String &match,uint16_t m
 	uint8_t resend_cnt = 0;
   ATWrite(cmd.c_str());
   ret = checkResponseAndGetMessage(match,match_len,time_out,msg);
+
+  //debug.print("msg  =  ");
+  //debug.println(msg);
+
   while(!ret){
 		resend_cnt++;
 		if(resend_cnt > max_resend_cnt){

@@ -28,8 +28,8 @@
 
 
 #include <Arduino.h>
-#include "SoftwareSerial.h"
 #include "ATSerial.h"
+#include "softwareSerial.h"
 
 
 
@@ -80,10 +80,25 @@ typedef enum
     SOFT_AP_WEB,
 }WifiConfig;
 
+typedef enum
+{
+    DISCONNECT = -1,           //Indicate that wifi module does not connect in sta mode or does not configure ok in AP mode. 
+    AP_MODE_SET_OK = 1,            //Indicate that wifi module runs in AP mode and configure ok! 
+    STA_MODE_CONNECTED,        //Indicate that wifi module runs in STA mode and had connected a ap already.
+    AP_STA_MODE_CONNECT_OK,    //Indicate that wifi module runs in STA&AP mode,and,AP configure ok & STA had connect to specifed ap.
+}WifiStatus;
+
 class AtWifi:public ATSerial
 {
     public:
-        AtWifi(){};
+        AtWifi(){wifi_status_ = DISCONNECT;};
+        inline void setWifiStatus(WifiStatus status){
+            wifi_status_ = status;
+        }
+        inline WifiStatus getWifiStatus(void){
+            return wifi_status_;
+        }
+
         #if defined(SAMD21)
         void begin(HardwareSerial &uart,uint32_t baud = DEFAULT_BAUD);
         #else
@@ -227,7 +242,7 @@ class AtWifi:public ATSerial
 
         bool recvData(uint8_t *recv_msg,uint32_t &len);
         /**Send msg from socket.
-         * msg - the msg that module return.
+         * msg - the msg that module return by AT CMD.
          * socket - socket number.
          * send - the string msg to send.
          * */
@@ -240,7 +255,12 @@ class AtWifi:public ATSerial
         bool wifiSocketRead(String &msg,int32_t socket,uint32_t read_len);
 
         bool getSpecSocketInfo(String &msg,int32_t socket);
+
+
     private:
+
+
+        WifiStatus wifi_status_;
         String cmd_;
 
 };

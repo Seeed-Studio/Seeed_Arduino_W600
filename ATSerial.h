@@ -41,17 +41,17 @@
 #if defined(ARDUINO_ARCH_AVR)
 #define UART_MAX_LEN   512
 #define debug Serial
-#define DEBUG_EN 1
+#define DEBUG_EN 0
 #elif defined(ARDUINO_ARCH_SAM)
 #define SAMD21
 #define UART_MAX_LEN   1024
 #define debug SerialUSB
-#define DEBUG_EN 1
+#define DEBUG_EN 0
 #elif defined(ARDUINO_ARCH_SAMD)
 #define SAMD21
 #define UART_MAX_LEN   1024
 #define debug SerialUSB
-#define DEBUG_EN 1
+#define DEBUG_EN 0
 #elif defined(ARDUINO_ARCH_STM32F4)
 #define UART_MAX_LEN   1024
 #define debug Serial

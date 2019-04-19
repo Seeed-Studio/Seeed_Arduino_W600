@@ -169,7 +169,16 @@ bool AtWifi::wifiApGetPswd(String &msg)
     return ret;
 }
 
-
+/** Set encryption mode
+ *  0 - OPEN
+ *  1 - WEP64
+ *  2 - WEP128
+ *  3 - WPA-PSK(TKIP)
+ *  4 - WPA-PSK(CCMP/AES)
+ *  5 - WPA2-PSK(TKIP)
+ *  6 - WPA2-PSK(CCMP/AES)
+ *  We use the 5 - WPA2-PSK(TKIP) hear;
+ * */
 bool AtWifi::wifiApSetEncry()
 {
     ATSerial::flush();
@@ -191,7 +200,13 @@ bool AtWifi::wifiApGetEncry(String &msg)
     }
     return ret;
 }
-
+/**Set network infomation for module when it works in AP mode.
+ * appr:The way that client get ip addr:DHCP or static.
+ * ip:ip addr
+ * gateway:gateway ip addr
+ * mask:network mask
+ * dns:dns ip addr.
+ * */
 bool AtWifi::wifiApSetIpAndMask(Get_ip_approach appr,char* ip,char* gateway,char* mask,char* dns)
 {
     ATSerial::flush();
@@ -297,7 +312,14 @@ bool AtWifi::wifiStaGetIp(String &msg)
 
 
 
-
+/**Create a socket connection in STA mode.
+ * msg - The socket number that module return.
+ * pro - network protocol,TCP or UDP.
+ * mode - client or server.
+ * server - server ip addr.
+ * remote_port
+ * local_port
+ * */
 bool AtWifi::wifiCreateSocket(String &msg,NetProtocol pro,NetMode mode,const char* server,uint16_t remote_port,uint16_t local_port)
 {
     bool ret = false;
@@ -311,6 +333,14 @@ bool AtWifi::wifiCreateSocket(String &msg,NetProtocol pro,NetMode mode,const cha
     return ret;
 }
 
+/**Create a socket binding in AP mode.
+ * msg - The socket number that module return.
+ * pro - network protocol,TCP or UDP.
+ * mode - client or server.
+ * time_out - time out for client,when there is not a communication between server and client for a long time,abort connection.
+ * remote_port
+ * local_port
+ * */
 bool AtWifi::wifiCreateSocket(String &msg,NetProtocol pro,NetMode mode,uint32_t time_out,uint16_t remote_port,uint16_t local_port)
 {
     bool ret = false;
@@ -324,7 +354,11 @@ bool AtWifi::wifiCreateSocket(String &msg,NetProtocol pro,NetMode mode,uint32_t 
     return ret;
 }
 
-
+/**Send msg from socket.
+ * msg - the msg that module return by AT CMD.
+ * socket - socket number.
+ * send - the string msg to send.
+ * */
 bool AtWifi::wifiSocketSend(String &msg,int32_t socket,String &send)
 {
     bool ret = false;
@@ -341,7 +375,11 @@ bool AtWifi::wifiSocketSend(String &msg,int32_t socket,String &send)
     return ret;
 }
 
-
+/**Recv msg from socket.
+ * msg - the msg recved from socket.
+ * scoket - socket number
+ * read_len - recv len.
+ * */
 bool AtWifi::wifiSocketRead(String &msg,int32_t socket,uint32_t read_len)
 {
     bool ret = false;
