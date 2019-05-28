@@ -46,12 +46,12 @@
 #define SAMD21
 #define UART_MAX_LEN   1024
 #define debug SerialUSB
-#define DEBUG_EN 0
+#define DEBUG_EN 1
 #elif defined(ARDUINO_ARCH_SAMD)
 #define SAMD21
 #define UART_MAX_LEN   1024
 #define debug SerialUSB
-#define DEBUG_EN 0
+#define DEBUG_EN 1
 #elif defined(ARDUINO_ARCH_STM32F4)
 #define UART_MAX_LEN   1024
 #define debug Serial
@@ -143,6 +143,6 @@ class ATSerial {
 
     bool waitForData(uint8_t *recv_msg,uint32_t &recv_len,uint32_t time_out = TIME_OUT_MS,uint8_t max_resend_cnt = MAX_RESEND_CNT);
 
-    
+    bool getMsg(String& msg,uint32_t time_out = TIME_OUT_MS);
 };
 #endif

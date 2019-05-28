@@ -59,7 +59,7 @@ void ATSerial::flush(void) {
 }
 
 
-
+/*
 bool ATSerial::readResp(String &rsp,uint32_t time_out)
 {
   int i = 0;
@@ -76,12 +76,44 @@ bool ATSerial::readResp(String &rsp,uint32_t time_out)
     rsp += (char)_uart->read();
     if(rsp.length() >= UART_MAX_LEN)
       break;
-    delayMicroseconds(5000);
+    delayMicroseconds(2000);
   }
   flush();
   return true;
 }
+*/
 
+bool ATSerial::readResp(String &rsp,uint32_t time_out)
+{
+  int i = 0;
+  int ch = 0;
+  int cnt = 0;
+  uint32_t milli = millis();
+  while(!_uart->available()){
+     if((millis() - milli) > time_out){
+		 return false;
+	 }
+  }
+  delayMicroseconds(5000);
+  while(1)
+  {
+    cnt = 0;
+    rsp += (char)_uart->read();
+    if(rsp.length() >= UART_MAX_LEN)
+      break;
+    while(!_uart->available())
+    {
+      delayMicroseconds(200);
+      cnt++;
+      if(cnt >= 10)
+        break;
+    }
+    if(!_uart->available())
+      break;
+  }
+  flush();
+  return true;
+}
 
 
 
@@ -103,7 +135,7 @@ bool ATSerial::checkResponse(String& s,uint16_t match_len,uint32_t time_out)
   }
 
   #if DEBUG_EN
-  debug.print("Read <===: ");
+  debug.print("Check Read <===: ");
   debug.println(rsp);
   #endif
 
@@ -114,6 +146,24 @@ bool ATSerial::checkResponse(String& s,uint16_t match_len,uint32_t time_out)
       return false;
     }
   }
+  return true;
+}
+
+bool ATSerial::getMsg(String& msg,uint32_t time_out)
+{
+  bool ret = false;
+  //String rsp;
+
+  ret = readResp(msg,time_out);
+  if(!ret){
+	  return false;
+  }
+
+  #if DEBUG_EN
+  debug.print("get Read <===: ");
+  debug.println(msg);
+  #endif
+
   return true;
 }
 
@@ -147,11 +197,6 @@ bool ATSerial::checkResponseAndGetMessage(String& s,uint16_t match_len,uint32_t 
       return false;
     }
   }
-  //strcpy(msg.c_str(),(const char*)rsp.c_str());
-  // for(int i=0;i<rsp.length();i++)
-  // {
-  //   msg[i] = rsp[i];
-  // }
   msg = rsp;
   return true;
 }
