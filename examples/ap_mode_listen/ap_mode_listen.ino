@@ -76,8 +76,6 @@ int32_t client_socket[5]={0};
 static const uint16_t SERVER_PORT = 8888; 
 
 
-
-
 void setup()
 {
     debug.begin(115200);
