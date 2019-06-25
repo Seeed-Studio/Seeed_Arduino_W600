@@ -12,6 +12,12 @@ The air602 UART wifi module receive AT command,So arduino board can control it v
 
 * By default, The arduino board outputs the instruction info while sending AT command to air602 wifi module,user can close it in file:ATSerial.h,change the DEBUG_EN from 1 to 0.
 
+
+Notice:  
+
+**The sta_http_get_lcd_display example does not support arduino UNO.
+Since it only  has a small serial buffer.**
+
 ***
 This software is written by downey  for seeed studio<br>
 Email:dao.huang@seeed.cc
