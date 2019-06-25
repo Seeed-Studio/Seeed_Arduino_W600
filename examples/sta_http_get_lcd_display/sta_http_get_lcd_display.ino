@@ -180,11 +180,11 @@ void setup()
         return;
     }
     
-    /*
+    
     if(!wifi.wifiHttpService("http://api.k780.com/?app=weather.today&weaid=1&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4&format=json",HTTP_GET,msg))
     {
         debug.println("Get http text failed!!");
-    }*/
+    }
     
 
 
@@ -221,11 +221,11 @@ void display_item(uint8_t item)
             lcd.clear();
             if(temperature.length() > 0){
                 uint8_t t = (uint8_t)temperature.toInt();
-                debug.println(t);   
+                //debug.println(t);   
                 temperature.remove(0,temperature.length());
                 temperature += t ;
                 temperature += "C";
-                debug.println(temperature);
+                //debug.println(temperature);
             }
             
             lcd.setCursor(0, 0);
