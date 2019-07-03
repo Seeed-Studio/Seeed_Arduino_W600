@@ -26,7 +26,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-#include "seeed_air602.h"
+#include "seeed_w600.h"
 
 
 // Architecture specific include

@@ -28,7 +28,7 @@
  */
 
 
-#include "seeed_air602.h"
+#include "seeed_w600.h"
 
 
 
