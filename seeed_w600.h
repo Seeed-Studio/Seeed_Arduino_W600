@@ -29,7 +29,7 @@
 
 #include <Arduino.h>
 #include "ATSerial.h"
-#include "softwareSerial.h"
+#include "SoftwareSerial.h"
 
 
 
