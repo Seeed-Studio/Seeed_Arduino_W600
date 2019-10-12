@@ -193,70 +193,6 @@ bool AtWifi::wifiStaSetTargetApPswd(const char* password)
     return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
 }
 
-bool AtWifi::wifiApSetSsid(const char* ssid)
-{
-    ATSerial::flush();
-    strcpy_P(_cmd_buffer,PSTR("AT+APSSID=!"));
-    strcat(_cmd_buffer,ssid);
-    strcat(_cmd_buffer,AT_enter);
-    return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
-}
-
-bool AtWifi::wifiApSetPswd(const char* password,Key_format format)
-{
-    ATSerial::flush();
-    sprintf_P(_cmd_buffer,PSTR("AT+APKEY=!%d,4,"),format);
-    strcat(_cmd_buffer,password);
-    strcat(_cmd_buffer,AT_enter);
-    return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
-}
-
-/** Set encryption mode
- *  0 - OPEN
- *  1 - WEP64
- *  2 - WEP128
- *  3 - WPA-PSK(TKIP)
- *  4 - WPA-PSK(CCMP/AES)
- *  5 - WPA2-PSK(TKIP)
- *  6 - WPA2-PSK(CCMP/AES)
- *  We use the 5 - WPA2-PSK(TKIP) hear;
- * */
-bool AtWifi::wifiApSetEncry(int mode)
-{
-    ATSerial::flush();
-    sprintf_P(_cmd_buffer,PSTR("AT+APENCRY=!%d"),mode);
-    strcat(_cmd_buffer,AT_enter);
-    return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
-}
-
-/**Set network infomation for module when it works in AP mode.
- * appr:The way that client get ip addr:DHCP or static.
- * ip:ip addr
- * gateway:gateway ip addr
- * mask:network mask
- * dns:dns ip addr.
- * */
-bool AtWifi::wifiApSetIpAndMask(Get_ip_approach appr,const char* ip,const char* gateway,const char* mask,const char* dns)
-{
-    ATSerial::flush();
-    sprintf_P(_cmd_buffer,PSTR("AT+APNIP=!%d,"),appr);
-    strcat(_cmd_buffer,ip);
-    strcat(_cmd_buffer,",");
-    strcat(_cmd_buffer,gateway);
-    strcat(_cmd_buffer,",");
-    strcat(_cmd_buffer,mask);
-    strcat(_cmd_buffer,",");
-    strcat(_cmd_buffer,dns);
-    strcat(_cmd_buffer,AT_enter);
-    return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
-}
-
-bool AtWifi::exit_Tc_mode()
-{
-    ATSerial::flush();
-    strcpy_P(_cmd_buffer,PSTR("+++"));
-    return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
-}
 
 /**Create a socket connection in STA mode.
  * msg - The socket number that module return.
@@ -279,38 +215,13 @@ int AtWifi::wifiCreateSocketSTA(NetProtocol pro,NetMode mode,const char* server,
     //TODO this previously had a custom timeout set 5000
 }
 
-
-/**Create a socket binding in AP mode.
- * msg - The socket number that module return.
- * pro - network protocol,TCP or UDP.
- * mode - client or server.
- * time_out - time out for client,when there is not a communication between server and client for a long time,abort connection.
- * remote_port
- * local_port
- * */
-bool AtWifi::wifiCreateSocketAP(NetProtocol pro,NetMode mode,uint32_t time_out,uint16_t remote_port,uint16_t local_port)
-{
-    ATSerial::flush();
-    sprintf_P(_cmd_buffer,PSTR("AT+SKCT=%d,%d,%d,%d,%d,%s"),pro,mode,time_out,remote_port,local_port,AT_enter);
-    return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK_equal,_resp_buffer);
-    // if (ok) {
-    //     return 6;
-    //     //+OK=<socket><CR><LF><CR><LF>
-    //     //msg[0] - 0x30;
-
-    //     //+OK=60e327e21be8,0,6,1,"dnf",58;
-    // } else{
-    //     return -1;
-    // }
-}
-
 /**Send msg from socket.
  * socket - socket number.
  * send - the string msg to send.
  * */
-bool AtWifi::wifiSocketSend(int32_t socket,const char* send) //TODO figure out if this should actually be a PSTR or similar thing
+bool AtWifi::wifiSocketSend(int32_t socket,const char* send) 
 {
-    bool ret = wifiSocketPrepareSend(socket, strlen(send)); // in which case this is strlen_P
+    bool ret = wifiSocketPrepareSend(socket, strlen(send)); 
     if (ret) {
         ATSerial::flush();
         ATSerial::ATWrite(send);
@@ -385,60 +296,11 @@ bool AtWifi::httpPost(
  * scoket - socket number
  * read_len - recv len.
  * */
-bool AtWifi::wifiSocketRead(int32_t socket,uint32_t read_len)
+bool AtWifi::wifiSocketRead(int32_t socket,uint32_t read_len) //TODO is there a problem with types passed to sprintf_P here?
 {
     ATSerial::flush();
     sprintf_P(_cmd_buffer,PSTR("AT+SKRCV=%d,%d,%s"),socket,read_len,AT_enter);
     return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK_equal,_resp_buffer);
-}
-
-/*Whether to enable ap ssid broadcast function!*/
-bool AtWifi::broadcastApSsidSet(bool flag)
-{
-    ATSerial::flush();
-    sprintf_P(_cmd_buffer,PSTR("AT+BRDSSID=!%d"),flag);
-    strcat(_cmd_buffer,AT_enter);
-    return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
-}
-
-bool AtWifi::setBaudrate(uint32_t baud)
-{
-    ATSerial::flush();
-    sprintf_P(_cmd_buffer,PSTR("AT+UART=!%d,0,0,0,0"),baud);
-    strcat(_cmd_buffer,AT_enter);
-    return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
-}
-
-bool AtWifi::getSpecSocketInfo(int32_t socket)
-{
-    ATSerial::flush();
-    sprintf_P(_cmd_buffer,PSTR("AT+SKSTT=%d"),socket);
-    strcat(_cmd_buffer,AT_enter);
-    return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK_equal,_resp_buffer);
-}
-
-bool AtWifi::wifiCloseSpecSocket(int32_t socket)
-{
-    ATSerial::flush();
-    sprintf_P(_cmd_buffer,PSTR("AT+SKCLS=%d"),socket);
-    strcat(_cmd_buffer,AT_enter);
-    return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
-}
-
-bool AtWifi::wifiSetDefaultSocket(int32_t socket)
-{
-    ATSerial::flush();
-    sprintf_P(_cmd_buffer,PSTR("AT+SKSDF=%d"),socket);
-    strcat(_cmd_buffer,AT_enter);
-    return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
-}
-
-bool AtWifi::setWifiConfigMode(WifiConfig mode)
-{
-    ATSerial::flush();
-    sprintf_P(_cmd_buffer,PSTR("AT+ONEMODE=!%d"),mode);
-    strcat(_cmd_buffer,AT_enter);
-    return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
 }
 
 bool AtWifi::sendBinaryMsg(uint8_t *msg,uint32_t msg_len)
@@ -452,44 +314,138 @@ bool AtWifi::recvData(uint8_t *recv_msg,uint32_t *len)
     return ATSerial::waitForData(recv_msg,len); //prev had custom timeout 5000
 }
 
-// bool AtWifi::setWifiConfigEnable(bool flag)
+// Untested code todo with config or reading data
+// bool AtWifi::setBaudrate(uint32_t baud)
 // {
 //     ATSerial::flush();
-//     cmd_.remove(0,cmd_.length());
-//     cmd_ += String("AT+ONESHOT=!") + flag + AT_enter;
-//     return ATSerial::sendCmdAndCheckRsp(cmd_,RSP_OK,RSP_OK.length());
+//     sprintf_P(_cmd_buffer,PSTR("AT+UART=!%d,0,0,0,0"),baud);
+//     strcat(_cmd_buffer,AT_enter);
+//     return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
 // }
 
-// bool AtWifi::wifiPing(const char *dst,int interval_time,int count,bool operate_flag)
+// bool AtWifi::getSpecSocketInfo(int socket)
 // {
 //     ATSerial::flush();
-//     cmd_.remove(0,cmd_.length());
-//     cmd_ += String("AT+PING=") + dst + ',' + interval_time+ ',' + count + ',' + operate_flag + AT_enter;
-//     return ATSerial::sendCmdAndCheckRsp(cmd_,RSP_OK,RSP_OK.length());
+//     sprintf_P(_cmd_buffer,PSTR("AT+SKSTT=%d"),socket);
+//     strcat(_cmd_buffer,AT_enter);
+//     return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK_equal,_resp_buffer);
+// }
+
+// bool AtWifi::wifiCloseSpecSocket(int socket)
+// {
+//     ATSerial::flush();
+//     sprintf_P(_cmd_buffer,PSTR("AT+SKCLS=%d"),socket);
+//     strcat(_cmd_buffer,AT_enter);
+//     return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
+// }
+
+// bool AtWifi::wifiSetDefaultSocket(int32_t socket)
+// {
+//     ATSerial::flush();
+//     sprintf_P(_cmd_buffer,PSTR("AT+SKSDF=%d"),socket);
+//     strcat(_cmd_buffer,AT_enter);
+//     return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
+// }
+
+// bool AtWifi::setWifiConfigMode(WifiConfig mode)
+// {
+//     ATSerial::flush();
+//     sprintf_P(_cmd_buffer,PSTR("AT+ONEMODE=!%d"),mode);
+//     strcat(_cmd_buffer,AT_enter);
+//     return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
 // }
 
 
-/* bool wifiSocketSend(ATSerial* at_serial, String &msg,int32_t socket,String &send) Dave and I implemented
-{
-    String buff;
-    bool ret = false;
-    at_serial->flush();
-    
-    buff += String("AT+SKSND=") + socket + ',' + send.length() + AT_enter;
-    ret = at_serial->sendCmdAndGetMsg(msg,buff,RSP_OK_equal,RSP_OK_equal.length());
-    if(ret){
-        msg.remove(0,4);
-    }
-    
-    const char* b = send.c_str();
-    int remain = send.length();
-    while (remain > 0){
-      int bytes_written = at_serial->ATWrite(b);
-      remain -= bytes_written;
-      b += bytes_written;
-    }
-    at_serial->flush();
-    return ret;
-} */
+// Code below contains code for operating in AP mode - ported from original seeed library and re-written to avoid Strings but untested. 
+
+// /**Create a socket binding in AP mode.
+//  * msg - The socket number that module return.
+//  * pro - network protocol,TCP or UDP.
+//  * mode - client or server.
+//  * time_out - time out for client,when there is not a communication between server and client for a long time,abort connection.
+//  * remote_port
+//  * local_port
+//  * */
+// bool AtWifi::wifiCreateSocketAP(NetProtocol pro,NetMode mode,uint32_t time_out,uint16_t remote_port,uint16_t local_port)
+// {
+//     ATSerial::flush();
+//     sprintf_P(_cmd_buffer,PSTR("AT+SKCT=%d,%d,%d,%d,%d,%s"),pro,mode,time_out,remote_port,local_port,AT_enter);
+//     return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK_equal,_resp_buffer);
+// }
+
+// /*Whether to enable ap ssid broadcast function!*/
+// bool AtWifi::broadcastApSsidSet(bool flag)
+// {
+//     ATSerial::flush();
+//     sprintf_P(_cmd_buffer,PSTR("AT+BRDSSID=!%d"),flag);
+//     strcat(_cmd_buffer,AT_enter);
+//     return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
+// }
+
+// bool AtWifi::wifiApSetSsid(const char* ssid)
+// {
+//     ATSerial::flush();
+//     strcpy_P(_cmd_buffer,PSTR("AT+APSSID=!"));
+//     strcat(_cmd_buffer,ssid);
+//     strcat(_cmd_buffer,AT_enter);
+//     return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
+// }
+
+// bool AtWifi::wifiApSetPswd(const char* password,Key_format format)
+// {
+//     ATSerial::flush();
+//     sprintf_P(_cmd_buffer,PSTR("AT+APKEY=!%d,4,"),format);
+//     strcat(_cmd_buffer,password);
+//     strcat(_cmd_buffer,AT_enter);
+//     return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
+// }
+
+// /** Set encryption mode
+//  *  0 - OPEN
+//  *  1 - WEP64
+//  *  2 - WEP128
+//  *  3 - WPA-PSK(TKIP)
+//  *  4 - WPA-PSK(CCMP/AES)
+//  *  5 - WPA2-PSK(TKIP)
+//  *  6 - WPA2-PSK(CCMP/AES)
+//  *  We use the 5 - WPA2-PSK(TKIP) hear;
+//  * */
+// bool AtWifi::wifiApSetEncry(int mode)
+// {
+//     ATSerial::flush();
+//     sprintf_P(_cmd_buffer,PSTR("AT+APENCRY=!%d"),mode);
+//     strcat(_cmd_buffer,AT_enter);
+//     return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
+// }
+
+// /**Set network infomation for module when it works in AP mode.
+//  * appr:The way that client get ip addr:DHCP or static.
+//  * ip:ip addr
+//  * gateway:gateway ip addr
+//  * mask:network mask
+//  * dns:dns ip addr.
+//  * */
+// bool AtWifi::wifiApSetIpAndMask(Get_ip_approach appr,const char* ip,const char* gateway,const char* mask,const char* dns)
+// {
+//     ATSerial::flush();
+//     sprintf_P(_cmd_buffer,PSTR("AT+APNIP=!%d,"),appr);
+//     strcat(_cmd_buffer,ip);
+//     strcat(_cmd_buffer,",");
+//     strcat(_cmd_buffer,gateway);
+//     strcat(_cmd_buffer,",");
+//     strcat(_cmd_buffer,mask);
+//     strcat(_cmd_buffer,",");
+//     strcat(_cmd_buffer,dns);
+//     strcat(_cmd_buffer,AT_enter);
+//     return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
+// }
+
+// bool AtWifi::exit_Tc_mode()
+// {
+//     ATSerial::flush();
+//     strcpy_P(_cmd_buffer,PSTR("+++"));
+//     return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
+// }
+
 
 
