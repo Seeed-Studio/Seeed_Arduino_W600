@@ -183,6 +183,25 @@ int ATSerial::ATWrite(const char* s) {
   return _uart->write(s);
 }
 
+/***
+ * fmt : A format string stored in Flash.
+ * ... : arguaments to pass to sprintf_P(fmt).
+ ***/
+int ATSerial::ATWritef_P(const __FlashStringHelper* fmt, ...) {
+  va_list va;
+  va_start(va, fmt);
+  size_t len = vsnprintf_P(nullptr, 0, reinterpret_cast<const char*>(fmt), va);
+  va_end(va);
+
+  char buf[len];
+
+  va_start(va, fmt);
+  vsprintf_P(buf, reinterpret_cast<const char*>(fmt), va);
+  va_end(va);
+
+  ATWrite(buf);
+}
+
 int ATSerial::ATWrite(const uint8_t uc) {
   
   return _uart->write(uc);

@@ -108,16 +108,17 @@ class AtWifi:public ATSerial
         const char* buffer() const {return _resp_buffer;}
 
         // Send an AT command. Returns true if response begins with +OK. 
-        bool sendAT(const char* cmd);
+        bool sendAT(const __FlashStringHelper* cmd);
 
         //Set wifi mode:1.station mode ,2.AP mode 3.station&AP mode.
         bool wifiSetMode(WifiMode mode);
 
         //Set target Ap ssid,Module work in STA or STA&AP mode.
-        bool wifiStaSetTargetApSsid(const char* ssid);
+        bool wifiStaSetTargetApSsid(const __FlashStringHelper* ssid);
 
+    
         //Set target Ap password,Module work in STA or STA&AP mode.
-        bool wifiStaSetTargetApPswd(const char* password);
+        bool wifiStaSetTargetApPswd(const __FlashStringHelper* password);
 
         /** Set encryption mode
                  *  0 - OPEN
@@ -179,91 +180,6 @@ class AtWifi:public ATSerial
         bool setBaudrate(uint32_t baud);
         bool getSpecSocketInfo(int32_t socket);
         bool exit_Tc_mode();
-
-
-
------------------------
-bool AtWifi::sendAT(const char* cmd)
-bool AtWifi::wifiSetMode(WifiMode mode)
-bool AtWifi::wifiStaSetTargetApSsid(const char* ssid)
-bool AtWifi::wifiStaSetTargetApPswd(const char* password)
-/**Create a socket connection in STA mode.
- * msg - The socket number that module return.
- * pro - network protocol,TCP or UDP.
- * mode - client or server.
- * server - server ip addr.
- * remote_port
- * local_port
- * */
-int AtWifi::wifiCreateSocketSTA(NetProtocol pro,NetMode mode,const char* server,uint16_t remote_port,uint16_t local_port)
-
-/**Send msg from socket.
- * socket - socket number.
- * send - the string msg to send.
- * */
-bool AtWifi::wifiSocketSend(int32_t socket,const char* send)
-bool AtWifi::wifiSocketPrepareSend(int socket,int message_length)
-void AtWifi::write_P(const __FlashStringHelper* data)
-/***
- * each header must be terminated with \n
- * content must end with \n\n.
- ***/
-bool AtWifi::httpPost(
-    int socket, 
-    const __FlashStringHelper* post_url,
-    const __FlashStringHelper* host,
-    const __FlashStringHelper* user_agent, 
-    const __FlashStringHelper* content_type, 
-    const __FlashStringHelper* opt_headers, 
-    char* content)
-
-/**Recv msg from socket.
- * msg - the msg recved from socket.
- * scoket - socket number
- * read_len - recv len.
- * */
-bool AtWifi::wifiSocketRead(int32_t socket,uint32_t read_len)
-bool AtWifi::setBaudrate(uint32_t baud)
-
-bool AtWifi::getSpecSocketInfo(int32_t socket)
-
-bool AtWifi::wifiCloseSpecSocket(int32_t socket)
-{
-    ATSerial::flush();
-    sprintf_P(_cmd_buffer,PSTR("AT+SKCLS=%d"),socket);
-    strcat(_cmd_buffer,AT_enter);
-    return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
-}
-
-bool AtWifi::wifiSetDefaultSocket(int32_t socket)
-{
-    ATSerial::flush();
-    sprintf_P(_cmd_buffer,PSTR("AT+SKSDF=%d"),socket);
-    strcat(_cmd_buffer,AT_enter);
-    return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
-}
-
-bool AtWifi::setWifiConfigMode(WifiConfig mode)
-{
-    ATSerial::flush();
-    sprintf_P(_cmd_buffer,PSTR("AT+ONEMODE=!%d"),mode);
-    strcat(_cmd_buffer,AT_enter);
-    return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
-}
-
-bool AtWifi::sendBinaryMsg(uint8_t *msg,uint32_t msg_len)
-{
-    ATSerial::flush();
-    ATSerial::binWrite(msg,msg_len);
-}
-
-bool AtWifi::recvData(uint8_t *recv_msg,uint32_t *len)
-{
-    return ATSerial::waitForData(recv_msg,len); //prev had custom timeout 5000
-}
----------------------
-
-
 
     private:
         WifiStatus wifi_status_;

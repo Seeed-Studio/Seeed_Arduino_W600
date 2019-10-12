@@ -159,10 +159,10 @@ void AtWifi::begin(SoftwareSerial &uart,uint32_t baud)
 // }
 //-----------------------------------------------------------------------------
 
-bool AtWifi::sendAT(const char* cmd)
+bool AtWifi::sendAT(const __FlashStringHelper* cmd)
 {
     ATSerial::flush();
-    strcpy(_cmd_buffer,cmd);
+    strcpy_P(_cmd_buffer,(const char*)cmd);
     strcat(_cmd_buffer,AT_enter);
     return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK_min,_resp_buffer);
 }
@@ -175,20 +175,20 @@ bool AtWifi::wifiSetMode(WifiMode mode)
     return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
 }
 
-bool AtWifi::wifiStaSetTargetApSsid(const char* ssid)
+bool AtWifi::wifiStaSetTargetApSsid(const __FlashStringHelper* ssid)
 {
     ATSerial::flush();
     strcpy_P(_cmd_buffer,PSTR("AT+SSID=!"));
-    strcat(_cmd_buffer,ssid);
+    strcat_P(_cmd_buffer,(const char*)ssid);
     strcat(_cmd_buffer,AT_enter);
     return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);  
 }
 
-bool AtWifi::wifiStaSetTargetApPswd(const char* password)
+bool AtWifi::wifiStaSetTargetApPswd(const __FlashStringHelper* password)
 {
     ATSerial::flush();
     strcpy_P(_cmd_buffer,PSTR("AT+KEY=!1,0,"));
-    strcat(_cmd_buffer,password);
+    strcat_P(_cmd_buffer,(const char*)password);
     strcat(_cmd_buffer,AT_enter);
     return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
 }

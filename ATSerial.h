@@ -118,6 +118,7 @@ class ATSerial {
 
     int read(void);
     int ATWrite(const char* s);
+    int ATWritef_P(const __FlashStringHelper* fmt, ...);
     int ATWrite(const uint8_t uc);
     void binWrite(uint8_t *msg,uint32_t len);
 
