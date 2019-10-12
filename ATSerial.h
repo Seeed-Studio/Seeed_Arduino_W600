@@ -62,14 +62,14 @@
 #define UART_MAX_LEN   512
 #endif
 
-
+#define DEBUG_EN 1
 
 #ifndef UART_DELAY
 #define UART_DELAY 100
 #endif
 
 #ifndef UART_TIMEOUT
-#define UART_TIMEOUT 3000
+#define UART_TIMEOUT 8000 //TODO make default 3000 again
 #endif
 
 #define DEFAULT_RX 0
@@ -83,9 +83,6 @@
 #define TIME_OUT_MS     2000
 
 
-
-
-
 /**class ATSerial ,provide data transfer interface.
  * 
  * 
@@ -97,9 +94,11 @@ class ATSerial {
   #else 
     SoftwareSerial *_uart;
   #endif
-    
+  private:
+    uint32_t _timeout;
+    uint8_t _max_resend_cnt;
   public:
-    ATSerial();
+    ATSerial(uint32_t timeout=TIME_OUT_MS,uint8_t max_resend_cnt = MAX_RESEND_CNT);
 
     /** If arduino board is AVR,using softwareSerial,else if samd board,using hardwareSerial.
      * 
@@ -110,39 +109,17 @@ class ATSerial {
       void begin(SoftwareSerial &uart,uint32_t baud);
     #endif
 
+
     void flush(void);
-
-    int available(void);
-
-    bool checkResponse(String& s,uint16_t match_len,uint32_t time_out);
-
-    bool checkResponseAndGetMessage(String& s,uint16_t match_len,uint32_t time_out,String& msg);
-
-    char* readString(void);
-
-    bool isOkay(void);
-
-    bool restart(void);
+    bool readResp(char* rsp);
+    bool checkResponse(const char* prefix,char* resp_buffer);
+    bool sendCmdAndCheckRsp(const char* cmd, const char* prefix, char* resp_buffer);
+    bool waitForData(uint8_t *recv_msg,uint32_t *recv_len);
 
     int read(void);
-
-    int ATWrite(const char*);
-
+    int ATWrite(const char* s);
     int ATWrite(const uint8_t uc);
-
     void binWrite(uint8_t *msg,uint32_t len);
-    // bool readResp(uint8_t* msg);
 
-    bool readResp(String &rsp,uint32_t time_out);
-
-    // bool readMsg(uint8_t* msg);
-
-    bool sendCmdAndCheckRsp(String &cmd,String &match,uint16_t match_len,uint32_t time_out = TIME_OUT_MS ,uint8_t max_resend_cnt = MAX_RESEND_CNT);
-
-    bool sendCmdAndGetMsg(String &msg,String &cmd,String &match,uint16_t match_len,uint32_t time_out = TIME_OUT_MS,uint8_t max_resend_cnt = MAX_RESEND_CNT);
-
-    bool waitForData(uint8_t *recv_msg,uint32_t &recv_len,uint32_t time_out = TIME_OUT_MS,uint8_t max_resend_cnt = MAX_RESEND_CNT);
-
-    bool getMsg(String& msg,uint32_t time_out = TIME_OUT_MS);
 };
 #endif
