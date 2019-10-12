@@ -59,7 +59,7 @@
 #else
 #define debug Serial
 #define DEBUG_EN 0
-#define UART_MAX_LEN   512
+#define UART_MAX_LEN   216
 #endif
 
 #define DEBUG_EN 1

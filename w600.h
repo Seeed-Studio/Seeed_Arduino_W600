@@ -184,7 +184,7 @@ class AtWifi:public ATSerial
     private:
         WifiStatus wifi_status_;
         char _cmd_buffer[64];
-        char _resp_buffer[UART_MAX_LEN + 1];
+        char _resp_buffer[UART_MAX_LEN + 1]; //why does manually setting this to 216 result in different indication of memory usage?
         void AtWifi::write_P(const __FlashStringHelper* data);
 
 };
