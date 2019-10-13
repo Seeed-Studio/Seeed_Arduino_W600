@@ -29,12 +29,14 @@
 
 #include <Arduino.h>
 #include "ATSerial.h"
-#include "SoftwareSerial.h"
 
+#if defined(SAMD21) || defined(HAVE_HWSERIAL1)
+#else
+    #include "SoftwareSerial.h"
+#endif
 
 #define debug Serial
 #define DEBUG_EN 1
-
 
 enum WifiMode{
         STA = 0,
@@ -99,10 +101,10 @@ class AtWifi:public ATSerial
             return wifi_status_;
         }
 
-        #if defined(SAMD21)
+        #if defined(SAMD21) || defined(HAVE_HWSERIAL1)
         void begin(HardwareSerial &uart,uint32_t baud = DEFAULT_BAUD);
         #else
-        void begin(SoftwareSerial &uart,uint32_t baud = DEFAULT_BAUD);
+            void begin(SoftwareSerial &uart,uint32_t baud = DEFAULT_BAUD);
         #endif
 
         const char* buffer() const {return _resp_buffer;}

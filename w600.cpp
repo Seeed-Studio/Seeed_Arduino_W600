@@ -31,7 +31,11 @@ static const char* RSP_OK_equal = "+OK=";
 static const char* RSP_OK_min = "+OK";
 static const char* AT_enter = "\r\n";
 
-#if defined(SAMD21)
+#ifndef HAVE_HWSERIAL1
+  #include "SoftwareSerial.h"
+#endif
+
+#if defined(SAMD21) || defined(HAVE_HWSERIAL1)
 void AtWifi::begin(HardwareSerial &uart,uint32_t baud)
 {
     ATSerial::begin(uart,baud);

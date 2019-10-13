@@ -33,7 +33,7 @@ ATSerial::ATSerial(uint32_t timeout,uint8_t max_resend_cnt) {
   _timeout = timeout;
   _max_resend_cnt = max_resend_cnt;
 }
-#if defined(SAMD21)
+#if defined(SAMD21) || defined(HAVE_HWSERIAL1)
 void ATSerial::begin(HardwareSerial &uart,uint32_t baud)
 {
   _uart = &uart;

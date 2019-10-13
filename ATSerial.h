@@ -31,38 +31,13 @@
 #define __AT_SERIAL_H__
 
 #include <Arduino.h>
-#if defined(SAMD21)
-#else
+#ifndef HAVE_HWSERIAL1
 #include "SoftwareSerial.h"
 #endif
 
-
-// Architecture specific include
-#if defined(ARDUINO_ARCH_AVR)
-#define UART_MAX_LEN   512
 #define debug Serial
-#define DEBUG_EN 0
-#elif defined(ARDUINO_ARCH_SAM)
-#define SAMD21
-#define UART_MAX_LEN   1024
-#define debug SerialUSB
 #define DEBUG_EN 1
-#elif defined(ARDUINO_ARCH_SAMD)
-#define SAMD21
-#define UART_MAX_LEN   1024
-#define debug SerialUSB
-#define DEBUG_EN 1
-#elif defined(ARDUINO_ARCH_STM32F4)
-#define UART_MAX_LEN   1024
-#define debug Serial
-#define DEBUG_EN 0
-#else
-#define debug Serial
-#define DEBUG_EN 0
 #define UART_MAX_LEN   216
-#endif
-
-#define DEBUG_EN 1
 
 #ifndef UART_DELAY
 #define UART_DELAY 100
@@ -82,14 +57,13 @@
 #define MAX_RESEND_CNT  2
 #define TIME_OUT_MS     2000
 
-
 /**class ATSerial ,provide data transfer interface.
  * 
  * 
  * */
 class ATSerial {
   protected:
-  #if defined(SAMD21)
+  #if defined(SAMD21) || defined(HAVE_HWSERIAL1)
     HardwareSerial *_uart;
   #else 
     SoftwareSerial *_uart;
@@ -100,15 +74,14 @@ class ATSerial {
   public:
     ATSerial(uint32_t timeout=TIME_OUT_MS,uint8_t max_resend_cnt = MAX_RESEND_CNT);
 
-    /** If arduino board is AVR,using softwareSerial,else if samd board,using hardwareSerial.
+    /** If arduino board has Serial1 use hardwareserial, otherwise use software serial.
      * 
      * */
-    #if defined(SAMD21)
-      void begin(HardwareSerial &uart,uint32_t baud);
-    #else 
+    #ifndef HAVE_HWSERIAL1 
       void begin(SoftwareSerial &uart,uint32_t baud);
+    #else
+      void begin(HardwareSerial &uart,uint32_t baud);
     #endif
-
 
     void flush(void);
     bool readResp(char* rsp);

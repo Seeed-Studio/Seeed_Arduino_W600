@@ -40,6 +40,8 @@ http://arduiniana.org.
 
 #elif defined(ARDUINO_ARCH_SAMD)
 
+#elif defined(HAVE_HWSERIAL1)
+
 #else
 
 #define _DEBUG 1
