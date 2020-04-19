@@ -7,8 +7,12 @@
   This example code is in the public domain.
  */
 #include "w600.h"
+#if defined(HAVE_HWSERIAL1)
+  #define WifiSerial Serial1
+#else
+  SoftwareSerial WifiSerial(2,3);
+#endif
 
-SoftwareSerial softSerial(2,3);
 #define SERIAL Serial
 #define debug  SERIAL
 
@@ -65,7 +69,7 @@ void setup()
     #if defined(SAMD21)
         wifi.begin(Serial,9600);
     #else
-        wifi.begin(softSerial,9600);
+        wifi.begin(WifiSerial,9600);
     #endif
 
     configure_wifi(5);
