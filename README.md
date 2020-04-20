@@ -1,4 +1,4 @@
-# Seeed grove w600 UART wifi
+# Seeed grove w600 UART wifi[![Build Status](https://travis-ci.com/Seeed-Studio/Grove_w600.svg?branch=master)](https://travis-ci.com/Seeed-Studio/Grove_w600)
 
 ## Introduction
 This library is intended to control the w600 wifi module from Arduino via AT commands. I have substantially re-written the original grove code to reduce dynamic memory allocation (particularly the use of String objects). 

@@ -1,0 +1,24 @@
+language: generic
+matrix:
+  include:
+    - env:
+        - BOARD="arduino:avr:uno"
+      install:
+        - arduino-cli core update-index
+        - arduino-cli core install arduino:avr
+# default phases
+before_install:
+  - mkdir -p "$HOME/bin"
+  - curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR="$HOME/bin" sh
+  - export PATH="$PATH:$HOME/bin"
+  - buildExampleSketch() { arduino-cli compile  --warnings all --fqbn $BOARD $PWD/examples/$1 --verbose; }
+  - buildExampleUtilitySketch() { arduino-cli compile --warnings all --fqbn $BOARD $PWD/examples/utility/$1 --verbose; }
+  - mkdir -p "$HOME/Arduino/libraries"
+  - ln -s "$PWD" "$HOME/Arduino/libraries/."
+script:
+  - buildExampleSketch log_data
+notifications:
+  webhooks:
+    urls:
+      - https://www.travisbuddy.com/
+    on_success: never
