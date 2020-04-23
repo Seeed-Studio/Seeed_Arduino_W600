@@ -7,8 +7,10 @@
   This example code is in the public domain.
  */
 #include "w600.h"
-#if defined(HAVE_HWSERIAL1)
+#if defined(HAVE_HWSERIAL1) 
   #define WifiSerial Serial1
+#elif defined(ARDUINO_ARCH_SAMD) 
+  #define WifiSerial Serial2
 #else
   SoftwareSerial WifiSerial(2,3);
 #endif
@@ -30,7 +32,7 @@ int connect_to_AP(int retries){
   int attempt = 0;
   debug.println(F("setting ssid ..."));
   while (!ssid_set && attempt < retries){
-      ssid_set = wifi.wifiStaSetTargetApSsid(F("ssid_for_wifi_access_point")); //TODO put in access point name here
+      ssid_set = wifi.wifiStaSetTargetApSsid(F("se.101")); //TODO put in access point name here
       delay(150);
   } if (!ssid_set){
     debug.println(F("failed to set ssid"));
@@ -40,7 +42,7 @@ int connect_to_AP(int retries){
   attempt = 0;
   debug.println(F("setting password"));
   while (!psswd_set && attempt < retries){
-    psswd_set = wifi.wifiStaSetTargetApPswd(F("password_for_wifi_access_point")); //TODO put in access point password here
+    psswd_set = wifi.wifiStaSetTargetApPswd(F("qqqqqqqq9")); //TODO put in access point password here
     delay(150);
   } if (!psswd_set){
     debug.println(F("failed to set password"));
