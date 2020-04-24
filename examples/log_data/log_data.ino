@@ -10,7 +10,8 @@
 #if defined(HAVE_HWSERIAL1) 
   #define WifiSerial Serial1
 #elif defined(ARDUINO_ARCH_SAMD) 
-  #define WifiSerial Serial2
+  #define WifiSerial Serial2   //serial number of seeeduino_zero (compatible with Wio Lite W600)
+  //the different board of samd have different serialx
 #else
   SoftwareSerial WifiSerial(2,3);
 #endif
