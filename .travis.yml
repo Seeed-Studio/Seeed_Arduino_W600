@@ -1,30 +1,21 @@
-language: generic
-matrix:
-  include:
-    - env:
-        - BOARD="arduino:avr:uno"
-      install:
-        - arduino-cli core update-index
-        - arduino-cli core install arduino:avr
-    - env:
-        - BOARD="Seeeduino:samd:seeed_XIAO_m0"
-      install:
-        - arduino-cli core update-index --additional-urls http://files.seeedstudio.com/arduino/package_seeeduino_boards_index.json
-        - arduino-cli core install Seeeduino:samd --additional-urls http://files.seeedstudio.com/arduino/package_seeeduino_boards_index.json
 
-# default phases
+language: generic
+dist: bionic
+sudo: false
+cache:
+  directories:
+    - ~/arduino_ide
+    - ~/.arduino15/packages/
+
 before_install:
-  - mkdir -p "$HOME/bin"
-  - curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR="$HOME/bin" sh
-  - export PATH="$PATH:$HOME/bin"
-  - buildExampleSketch() { arduino-cli compile  --warnings all --fqbn $BOARD $PWD/examples/$1 --verbose; }
-  - buildExampleUtilitySketch() { arduino-cli compile --warnings all --fqbn $BOARD $PWD/examples/utility/$1 --verbose; }
-  - mkdir -p "$HOME/Arduino/libraries"
-  - ln -s "$PWD" "$HOME/Arduino/libraries/."
+   - wget -c https://files.seeedstudio.com/arduino/seeed-arduino-ci.sh
+
 script:
-  - buildExampleSketch log_data
+   - chmod +x seeed-arduino-ci.sh
+   - cat $PWD/seeed-arduino-ci.sh
+   - bash $PWD/seeed-arduino-ci.sh test
+
 notifications:
-  webhooks:
-    urls:
-      - https://www.travisbuddy.com/
-    on_success: never
+  email:
+    on_success: change
+    on_failure: change
