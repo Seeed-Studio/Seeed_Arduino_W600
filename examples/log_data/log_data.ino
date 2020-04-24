@@ -12,6 +12,7 @@
 #elif defined(ARDUINO_ARCH_SAMD) 
   //the different board of samd have different serialx
   #define WifiSerial Serial2   //serial number of seeeduino_zero (compatible with Wio Lite W600)
+
 #else
   SoftwareSerial WifiSerial(2,3);
 #endif
