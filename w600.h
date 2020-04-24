@@ -101,8 +101,8 @@ class AtWifi:public ATSerial
             return wifi_status_;
         }
 
-        #if defined(SAMD21) || defined(HAVE_HWSERIAL1)
-        void begin(HardwareSerial &uart,uint32_t baud = DEFAULT_BAUD);
+        #if defined(ARDUINO_ARCH_SAMD) || defined(HAVE_HWSERIAL1)
+            void begin(HardwareSerial &uart,uint32_t baud = DEFAULT_BAUD);
         #else
             void begin(SoftwareSerial &uart,uint32_t baud = DEFAULT_BAUD);
         #endif
@@ -187,8 +187,8 @@ class AtWifi:public ATSerial
         WifiStatus wifi_status_;
         char _cmd_buffer[64];
         char _resp_buffer[UART_MAX_LEN + 1]; //why does manually setting this to 216 result in different indication of memory usage?
-        void AtWifi::write_P(const __FlashStringHelper* data);
-
+        // void AtWifi::write_P(const __FlashStringHelper* data);
+        void write_P(const __FlashStringHelper* data);
 };
 
 #endif

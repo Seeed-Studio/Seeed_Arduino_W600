@@ -63,7 +63,7 @@
  * */
 class ATSerial {
   protected:
-  #if defined(SAMD21) || defined(HAVE_HWSERIAL1)
+  #if defined(ARDUINO_ARCH_SAMD) || defined(HAVE_HWSERIAL1)
     HardwareSerial *_uart;
   #else 
     SoftwareSerial *_uart;
@@ -77,10 +77,16 @@ class ATSerial {
     /** If arduino board has Serial1 use hardwareserial, otherwise use software serial.
      * 
      * */
-    #ifndef HAVE_HWSERIAL1 
-      void begin(SoftwareSerial &uart,uint32_t baud);
-    #else
+    // #ifndef HAVE_HWSERIAL1 
+    //   void begin(SoftwareSerial &uart,uint32_t baud);
+    // #else
+    //   void begin(HardwareSerial &uart,uint32_t baud);
+    // #endif
+    
+    #if defined(ARDUINO_ARCH_SAMD) || defined(HAVE_HWSERIAL1)
       void begin(HardwareSerial &uart,uint32_t baud);
+    #else 
+      void begin(SoftwareSerial &uart,uint32_t baud);
     #endif
 
     void flush(void);
@@ -91,7 +97,7 @@ class ATSerial {
 
     int read(void);
     int ATWrite(const char* s);
-    int ATWritef_P(const __FlashStringHelper* fmt, ...);
+    // int ATWritef_P(const __FlashStringHelper* fmt, ...);
     int ATWrite(const uint8_t uc);
     void binWrite(uint8_t *msg,uint32_t len);
 

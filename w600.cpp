@@ -35,7 +35,7 @@ static const char* AT_enter = "\r\n";
   #include "SoftwareSerial.h"
 #endif
 
-#if defined(SAMD21) || defined(HAVE_HWSERIAL1)
+#if defined(ARDUINO_ARCH_SAMD) || defined(HAVE_HWSERIAL1)
 void AtWifi::begin(HardwareSerial &uart,uint32_t baud)
 {
     ATSerial::begin(uart,baud);
@@ -278,7 +278,7 @@ bool AtWifi::httpPost(
    if (sent){
         char buf[len_message_len];
         sprintf_P(buf,fmt,(content_len-2));
-           #if DEBUG_EN
+    #if DEBUG_EN
         debug.print(F("len_message_len:"));
         debug.println(len_message_len);
         debug.print(F("buffer:"));

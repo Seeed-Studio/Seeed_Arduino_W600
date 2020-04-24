@@ -6,6 +6,12 @@ matrix:
       install:
         - arduino-cli core update-index
         - arduino-cli core install arduino:avr
+    - env:
+        - BOARD="Seeeduino:samd:seeed_XIAO_m0"
+      install:
+        - arduino-cli core update-index --additional-urls http://files.seeedstudio.com/arduino/package_seeeduino_boards_index.json
+        - arduino-cli core install Seeeduino:samd --additional-urls http://files.seeedstudio.com/arduino/package_seeeduino_boards_index.json
+
 # default phases
 before_install:
   - mkdir -p "$HOME/bin"

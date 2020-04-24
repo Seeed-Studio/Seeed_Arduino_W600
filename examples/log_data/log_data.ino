@@ -7,8 +7,11 @@
   This example code is in the public domain.
  */
 #include "w600.h"
-#if defined(HAVE_HWSERIAL1)
+#if defined(HAVE_HWSERIAL1) 
   #define WifiSerial Serial1
+#elif defined(ARDUINO_ARCH_SAMD) 
+  #define WifiSerial Serial2
+
 #else
   SoftwareSerial WifiSerial(2,3);
 #endif

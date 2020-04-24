@@ -33,7 +33,7 @@ ATSerial::ATSerial(uint32_t timeout,uint8_t max_resend_cnt) {
   _timeout = timeout;
   _max_resend_cnt = max_resend_cnt;
 }
-#if defined(SAMD21) || defined(HAVE_HWSERIAL1)
+#if defined(ARDUINO_ARCH_SAMD) || defined(HAVE_HWSERIAL1)
 void ATSerial::begin(HardwareSerial &uart,uint32_t baud)
 {
   _uart = &uart;
@@ -187,20 +187,20 @@ int ATSerial::ATWrite(const char* s) {
  * fmt : A format string stored in Flash.
  * ... : arguaments to pass to sprintf_P(fmt).
  ***/
-int ATSerial::ATWritef_P(const __FlashStringHelper* fmt, ...) {
-  va_list va;
-  va_start(va, fmt);
-  size_t len = vsnprintf_P(nullptr, 0, reinterpret_cast<const char*>(fmt), va);
-  va_end(va);
+// int ATSerial::ATWritef_P(const __FlashStringHelper* fmt, ...) {
+//   va_list va;
+//   va_start(va, fmt);
+//   size_t len = vsnprintf_P(nullptr, 0, reinterpret_cast<const char*>(fmt), va);
+//   va_end(va);
 
-  char buf[len];
+//   char buf[len];
 
-  va_start(va, fmt);
-  vsprintf_P(buf, reinterpret_cast<const char*>(fmt), va);
-  va_end(va);
+//   va_start(va, fmt);
+//   vsprintf_P(buf, reinterpret_cast<const char*>(fmt), va);
+//   va_end(va);
 
-  ATWrite(buf);
-}
+//   ATWrite(buf);
+// }
 
 int ATSerial::ATWrite(const uint8_t uc) {
   
