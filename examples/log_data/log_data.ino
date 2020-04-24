@@ -11,6 +11,7 @@
   #define WifiSerial Serial1
 #elif defined(ARDUINO_ARCH_SAMD) 
   #define WifiSerial Serial2
+
 #else
   SoftwareSerial WifiSerial(2,3);
 #endif
