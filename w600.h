@@ -84,8 +84,8 @@ typedef enum
 
 typedef enum
 {
-    DISCONNECT = -1,           //Indicate that wifi module does not connect in sta mode or does not configure ok in AP mode. 
-    AP_MODE_SET_OK = 1,            //Indicate that wifi module runs in AP mode and configure ok! 
+    DISCONNECT = -1,           //Indicate that wifi module does not connect in sta mode or does not configure ok in AP mode.
+    AP_MODE_SET_OK = 1,            //Indicate that wifi module runs in AP mode and configure ok!
     STA_MODE_CONNECTED,        //Indicate that wifi module runs in STA mode and had connected a ap already.
     AP_STA_MODE_CONNECT_OK,    //Indicate that wifi module runs in STA&AP mode,and,AP configure ok & STA had connect to specifed ap.
 }WifiStatus;
@@ -109,7 +109,7 @@ class AtWifi:public ATSerial
 
         const char* buffer() const {return _resp_buffer;}
 
-        // Send an AT command. Returns true if response begins with +OK. 
+        // Send an AT command. Returns true if response begins with +OK.
         bool sendAT(const __FlashStringHelper* cmd);
 
         //Set wifi mode:1.station mode ,2.AP mode 3.station&AP mode.
@@ -118,7 +118,7 @@ class AtWifi:public ATSerial
         //Set target Ap ssid,Module work in STA or STA&AP mode.
         bool wifiStaSetTargetApSsid(const __FlashStringHelper* ssid);
 
-    
+
         //Set target Ap password,Module work in STA or STA&AP mode.
         bool wifiStaSetTargetApPswd(const __FlashStringHelper* password);
 
@@ -158,9 +158,9 @@ class AtWifi:public ATSerial
         * */
         bool wifiSocketRead(int32_t socket,uint32_t read_len);
 
-        bool httpPost(int socket, const __FlashStringHelper* post_url,const __FlashStringHelper* host,const __FlashStringHelper* user_agent, const __FlashStringHelper* content_type, const __FlashStringHelper* opt_headers, char* content);
+        void httpPost(int socket, const __FlashStringHelper* post_url,const __FlashStringHelper* host,const __FlashStringHelper* user_agent, const __FlashStringHelper* content_type, const __FlashStringHelper* opt_headers, char* content);
 
-        // AP mode: should ssid be broadcast? 
+        // AP mode: should ssid be broadcast?
         bool broadcastApSsidSet(bool flag);
 
 
@@ -177,7 +177,7 @@ class AtWifi:public ATSerial
         * */
         bool setWifiConfigMode(WifiConfig mode);
 
-        bool sendBinaryMsg(uint8_t *msg,uint32_t msg_len);
+        void sendBinaryMsg(uint8_t *msg,uint32_t msg_len);
         bool recvData(uint8_t *recv_msg,uint32_t *len);
         bool setBaudrate(uint32_t baud);
         bool getSpecSocketInfo(int32_t socket);
