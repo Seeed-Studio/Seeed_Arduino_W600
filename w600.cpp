@@ -22,6 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+#include <inttypes.h>
 
 #include "w600.h"
 #include <avr/pgmspace.h>
@@ -61,7 +62,7 @@ void AtWifi::begin(SoftwareSerial &uart,uint32_t baud)
 
 // bool AtWifi::wifiGetMode()
 // {
-//     return sendAT("AT+WPRT=!");   
+//     return sendAT("AT+WPRT=!");
 // }
 
 // bool AtWifi::wifiStaGetTargetApSsid()
@@ -185,7 +186,7 @@ bool AtWifi::wifiStaSetTargetApSsid(const __FlashStringHelper* ssid)
     strcpy_P(_cmd_buffer,PSTR("AT+SSID=!"));
     strcat_P(_cmd_buffer,(const char*)ssid);
     strcat(_cmd_buffer,AT_enter);
-    return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);  
+    return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK,_resp_buffer);
 }
 
 bool AtWifi::wifiStaSetTargetApPswd(const __FlashStringHelper* password)
@@ -212,7 +213,7 @@ int AtWifi::wifiCreateSocketSTA(NetProtocol pro,NetMode mode,const char* server,
     sprintf_P(_cmd_buffer,PSTR("AT+SKCT=%d,%d,%s,%d,%d,%s"),pro,mode,server,remote_port,local_port,AT_enter);
     bool ok = ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK_equal,_resp_buffer);
     if (ok) {
-        return atoi(&_resp_buffer[4]); 
+        return atoi(&_resp_buffer[4]);
     } else {
         return -1;
     }
@@ -223,9 +224,9 @@ int AtWifi::wifiCreateSocketSTA(NetProtocol pro,NetMode mode,const char* server,
  * socket - socket number.
  * send - the string msg to send.
  * */
-bool AtWifi::wifiSocketSend(int32_t socket,const char* send) 
+bool AtWifi::wifiSocketSend(int32_t socket,const char* send)
 {
-    bool ret = wifiSocketPrepareSend(socket, strlen(send)); 
+    bool ret = wifiSocketPrepareSend(socket, strlen(send));
     if (ret) {
         ATSerial::flush();
         ATSerial::ATWrite(send);
@@ -235,11 +236,11 @@ bool AtWifi::wifiSocketSend(int32_t socket,const char* send)
 
 bool AtWifi::wifiSocketPrepareSend(int socket,int message_length)
 {
-    ATSerial::flush();   
+    ATSerial::flush();
     const char* fmt = PSTR("AT+SKSND=%d,%d,%s");
-    int buflen = snprintf_P(nullptr,0, fmt,socket,message_length,AT_enter); 
+    int buflen = snprintf_P(nullptr,0, fmt,socket,message_length,AT_enter);
     char buf[buflen];
-    sprintf_P(buf, fmt,socket,message_length,AT_enter); 
+    sprintf_P(buf, fmt,socket,message_length,AT_enter);
       #if DEBUG_EN
         debug.print(F("message_length:"));
         debug.println(message_length);
@@ -260,13 +261,13 @@ void AtWifi::write_P(const __FlashStringHelper* data){
  * each header must be terminated with \n
  * content must end with \n\n.
  ***/
-bool AtWifi::httpPost(
-    int socket, 
+void AtWifi::httpPost(
+    int socket,
     const __FlashStringHelper* post_url,
     const __FlashStringHelper* host,
-    const __FlashStringHelper* user_agent, 
-    const __FlashStringHelper* content_type, 
-    const __FlashStringHelper* opt_headers, 
+    const __FlashStringHelper* user_agent,
+    const __FlashStringHelper* content_type,
+    const __FlashStringHelper* opt_headers,
     char* content)
 {
    int header_len = strlen_P((const char*)post_url) + strlen_P((const char*)host) + strlen_P((const char*)content_type) + strlen_P((const char*)opt_headers) + strlen_P((const char*)user_agent);
@@ -274,7 +275,7 @@ bool AtWifi::httpPost(
    const char* fmt = PSTR("Content-Length: %d\n\n");
    int len_message_len = snprintf_P(nullptr,0,fmt,(content_len-2));//does not include the 2 newlines
    bool sent =  wifiSocketPrepareSend(socket,header_len + content_len + len_message_len);
-   
+
    if (sent){
         char buf[len_message_len];
         sprintf_P(buf,fmt,(content_len-2));
@@ -300,14 +301,14 @@ bool AtWifi::httpPost(
  * scoket - socket number
  * read_len - recv len.
  * */
-bool AtWifi::wifiSocketRead(int32_t socket,uint32_t read_len) //TODO is there a problem with types passed to sprintf_P here?
+bool AtWifi::wifiSocketRead(int32_t socket, uint32_t read_len) //TODO is there a problem with types passed to sprintf_P here?
 {
     ATSerial::flush();
-    sprintf_P(_cmd_buffer,PSTR("AT+SKRCV=%d,%d,%s"),socket,read_len,AT_enter);
+    sprintf_P(_cmd_buffer, PSTR("AT+SKRCV=%" PRId32 ",%" PRIu32 ",%s"), socket, read_len, AT_enter);
     return ATSerial::sendCmdAndCheckRsp(_cmd_buffer,RSP_OK_equal,_resp_buffer);
 }
 
-bool AtWifi::sendBinaryMsg(uint8_t *msg,uint32_t msg_len)
+void AtWifi::sendBinaryMsg(uint8_t *msg,uint32_t msg_len)
 {
     ATSerial::flush();
     ATSerial::binWrite(msg,msg_len);
@@ -360,7 +361,7 @@ bool AtWifi::recvData(uint8_t *recv_msg,uint32_t *len)
 // }
 
 
-// Code below contains code for operating in AP mode - ported from original seeed library and re-written to avoid Strings but untested. 
+// Code below contains code for operating in AP mode - ported from original seeed library and re-written to avoid Strings but untested.
 
 // /**Create a socket binding in AP mode.
 //  * msg - The socket number that module return.

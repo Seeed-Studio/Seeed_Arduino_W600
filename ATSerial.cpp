@@ -66,7 +66,7 @@ bool ATSerial::readResp(char* rsp)
 	 }
   }
   //delayMicroseconds(5000);
-  while(1) 
+  while(1)
   {
     cnt = 0;
     *rsp = (char)_uart->read();
@@ -75,7 +75,7 @@ bool ATSerial::readResp(char* rsp)
 
     if(len >= UART_MAX_LEN)
       break;
-    
+
     // wait upto 2000us for another character to become available
     while(!_uart->available())
     {
@@ -97,7 +97,7 @@ bool ATSerial::readResp(char* rsp)
  * @param resp_buffer char array of length UART_MAX_LEN+1 (513) to which response from device is written
  * @return whether the response begins with prefix
  */
-bool ATSerial::checkResponse(const char* prefix,char* resp_buffer) 
+bool ATSerial::checkResponse(const char* prefix,char* resp_buffer)
 {
   if(!readResp(resp_buffer)){
 	  return false;
@@ -118,7 +118,6 @@ bool ATSerial::checkResponse(const char* prefix,char* resp_buffer)
  */
 bool ATSerial::sendCmdAndCheckRsp(const char* cmd, const char* prefix, char* resp_buffer)
 {
-	bool ret = false;
 	uint8_t resend_cnt = 0;
 	ATWrite(cmd);
 	while(!checkResponse(prefix, resp_buffer)){
@@ -140,8 +139,6 @@ bool ATSerial::sendCmdAndCheckRsp(const char* cmd, const char* prefix, char* res
 bool ATSerial::waitForData(uint8_t *recv_msg,uint32_t *chars_read)
 {
   int recv_len = 0;
-  int i = 0;
-  int ch = 0;
   uint32_t milli = millis();
   while(!_uart->available()){
      if((millis() - milli) > _timeout){
@@ -174,7 +171,7 @@ int ATSerial::read(void) {
  * @return the number of bytes written
  */
 int ATSerial::ATWrite(const char* s) {
-  
+
   #if DEBUG_EN
   debug.print(F("Write ===>: "));
   debug.println(s);
@@ -203,14 +200,14 @@ int ATSerial::ATWrite(const char* s) {
 // }
 
 int ATSerial::ATWrite(const uint8_t uc) {
-  
+
   return _uart->write(uc);
 }
 
 
-void ATSerial::binWrite(uint8_t *msg,uint32_t len)
+void ATSerial::binWrite(uint8_t *msg, uint32_t len)
 {
-  for(int i=0;i<len;i++)
+  for(uint32_t i=0; i < len; i++)
   {
     _uart->write(msg[i]);
   }
