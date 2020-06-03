@@ -71,11 +71,7 @@ int socket = -1;
 void setup()
 {
     debug.begin(115200);
-    #if defined(ARDUINO_SEEED_ZERO)
-        wifi.begin(Serial,9600);
-    #else
-        wifi.begin(WifiSerial,9600);
-    #endif
+    wifi.begin(WifiSerial,9600);
 
     configure_wifi(5);
     connect_to_AP(5);
